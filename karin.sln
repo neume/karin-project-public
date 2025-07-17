@@ -1,0 +1,28 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.csproj", "{18AFCD79-9918-42EA-8452-97B74ABD7B5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karin", "Karin\Karin.csproj", "{3BE121A0-CAB8-4451-BB4B-B16BFD490E44}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18AFCD79-9918-42EA-8452-97B74ABD7B5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18AFCD79-9918-42EA-8452-97B74ABD7B5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18AFCD79-9918-42EA-8452-97B74ABD7B5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18AFCD79-9918-42EA-8452-97B74ABD7B5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BE121A0-CAB8-4451-BB4B-B16BFD490E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BE121A0-CAB8-4451-BB4B-B16BFD490E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BE121A0-CAB8-4451-BB4B-B16BFD490E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BE121A0-CAB8-4451-BB4B-B16BFD490E44}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
