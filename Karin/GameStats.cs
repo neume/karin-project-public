@@ -7,6 +7,7 @@ public class GameStats
     public float FPS { get; private set; }
     public float UPS { get; private set; }
     public float FUPS { get; private set; }
+    public float TotalElapsedTime { get; private set; }
 
     int _drawCount;
     int _updateCount;
@@ -17,6 +18,7 @@ public class GameStats
     public void Update(GameTime gameTime)
     {
         _elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
+        TotalElapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
         _updateCount++;
         if (_elapsedTime >= 1)
         {
@@ -39,5 +41,14 @@ public class GameStats
     public void Draw(GameTime gameTime)
     {
         _drawCount++;
+    }
+
+    public string TotalElapsedTimeFormatted()
+    {
+        int hours = (int)TotalElapsedTime / 3600;
+        int minutes = (int)TotalElapsedTime / 60;
+        int seconds = (int)TotalElapsedTime % 60;
+        int milliseconds = (int)(TotalElapsedTime * 1000) % 1000;
+        return $"{minutes}:{seconds:00}:{milliseconds:000}";
     }
 }
