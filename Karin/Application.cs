@@ -40,6 +40,7 @@ public class Application
     {
         ImGuiRenderer.RebuildFontAtlas();
 
+        CurrentScene.Start();
         CurrentScene.LoadContent();
     }
 
