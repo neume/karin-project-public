@@ -34,7 +34,7 @@ Installers/Linux/tmp_run/
 *.sdf
 *.csproj.csdat
 ipch/
-obj/
+*/obj/
 [Bb]in
 [Dd]ebug*/
 [Rr]elease*/

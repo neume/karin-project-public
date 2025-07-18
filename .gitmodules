@@ -1,3 +1,6 @@
 [submodule "Sandbox"]
 	path = Sandbox
 	url = ./Sandbox
+[submodule "MonoGame.ImGuiNet"]
+	path = MonoGame.ImGuiNet
+	url = https://github.com/tsMezotic/MonoGame.ImGuiNet
