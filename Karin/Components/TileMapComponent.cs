@@ -7,7 +7,7 @@ public struct TileMapComponent
 {
     public Dictionary<Vector2, int> Map;
     public Dictionary<int, Rectangle> TextureStore;
-    public Texture2D? TextureAtlas;
+    public Texture2D TextureAtlas;
     public Vector2 Position;
     public bool IsVisible;
     public int TileWidth;

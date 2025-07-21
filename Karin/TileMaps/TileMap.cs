@@ -12,8 +12,8 @@ public static class TileMap
         foreach (var item in tileMapComponent.Map)
         {
             Rectangle dest = new Rectangle(
-                ((int)item.Key.X * tileMapComponent.TileWidth),
-                ((int)item.Key.Y * tileMapComponent.TileHeight),
+                ((int)item.Key.X * tileMapComponent.TileWidth) + (int)tileMapComponent.Position.X,
+                ((int)item.Key.Y * -tileMapComponent.TileHeight) + (int)tileMapComponent.Position.Y,
                 tileMapComponent.TileWidth,
                 tileMapComponent.TileHeight
             );

@@ -1,10 +1,7 @@
-using Karin.Graphics;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+namespace Karin;
 
-public static class AppGlobals
+public static class AppConfig
 {
-    public static Renderer Renderer;
-    public static GraphicsDevice GraphicsDevice;
-    public static Game Game;
+    public static readonly int ScreenWidth = 640;
+    public static readonly int ScreenHeight = 480;
 }

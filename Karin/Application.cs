@@ -1,9 +1,7 @@
-using ImGuiNET;
 using Karin.Events;
 using Karin.Inputs;
 using Karin.Graphics;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGame.ImGuiNet;
 using Karin.GuiTools;
 
@@ -17,7 +15,6 @@ public class Application
     float fixedDeltaTime = 1f / 50f;
     float accumulatedTime = 0f;
     public ImGuiRenderer ImGuiRenderer;
-    private SpriteBatch _spriteBatch;
     public List<ImGuiTool> Tools = new List<ImGuiTool>();
     public GameStats GameStats = new GameStats();
 
@@ -33,6 +30,8 @@ public class Application
         AppGlobals.Renderer = new Renderer(game);
         AppGlobals.GraphicsDevice = game.GraphicsDevice;
         AppGlobals.Game = game;
+        AppGlobals.Screen = new Screen(game, AppConfig.ScreenWidth, AppConfig.ScreenHeight);
+        AppGlobals.Camera = new Camera(AppGlobals.Screen);
         Instance = this;
         InputManager.OnEvent += OnEvent;
         ImGuiRenderer = new ImGuiRenderer(game);
@@ -61,9 +60,15 @@ public class Application
     {
         GameStats.Draw(gameTime);
 
-        AppGlobals.Renderer.Begin();
+        AppGlobals.Screen.Set();
+        AppGlobals.Game.GraphicsDevice.Clear(Color.CornflowerBlue);
+
+        AppGlobals.Renderer.Begin(AppGlobals.Camera);
         CurrentScene.Draw(gameTime);
         AppGlobals.Renderer.End();
+
+        AppGlobals.Screen.Unset();
+        AppGlobals.Screen.Present(AppGlobals.Renderer);
 
         ImGuiRenderer.BeginLayout(gameTime);
 

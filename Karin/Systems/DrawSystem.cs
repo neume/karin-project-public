@@ -1,3 +1,4 @@
+using System.Numerics;
 using DefaultEcs;
 using DefaultEcs.System;
 using Karin.Components;
@@ -30,7 +31,6 @@ public class DrawSystem : AEntitySetSystem<float>
         var spriteComponent = entity.Get<SpriteComponent>();
         var drawInfoComponent = entity.Get<DrawInfoComponent>();
 
-        DebugHelper.Log($"SpriteSystem: Draw Sprite: {drawInfoComponent.ZIndex}");
         AppGlobals.Renderer.Draw(spriteComponent.Texture,
                                 spriteComponent.Position,
                                 drawInfoComponent.ZIndex);
@@ -40,8 +40,6 @@ public class DrawSystem : AEntitySetSystem<float>
     {
         var tileMapComponent = entity.Get<TileMapComponent>();
         var drawInfoComponent = entity.Get<DrawInfoComponent>();
-
-        DebugHelper.Log($"TileMapSystem: Draw TileMap: {drawInfoComponent.ZIndex}");
 
         TileMap.DrawTileMap(tileMapComponent, drawInfoComponent.ZIndex); 
     }

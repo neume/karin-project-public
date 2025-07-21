@@ -26,8 +26,7 @@ public class Renderer : IDisposable
         _effect.Texture = null;
         _effect.World = Matrix.Identity;
         _effect.View = Matrix.Identity;
-        Viewport viewport = _game.GraphicsDevice.Viewport;
-        _effect.Projection = Matrix.CreateOrthographicOffCenter(0, viewport.Width, 0, viewport.Height, 0f, 1f);
+        _effect.Projection = Matrix.Identity;
     }
 
     public void Dispose()
@@ -40,15 +39,28 @@ public class Renderer : IDisposable
         _isDisposed = true;
     }
 
-    public void Begin()
+    public void Begin(Camera camera)
     {
+        if(camera is null)
+        {
+            Viewport viewport = _game.GraphicsDevice.Viewport;
+            _effect.Projection = Matrix.CreateOrthographicOffCenter(0, viewport.Width, 0, viewport.Height, 0f, 1f);
+            _effect.View = Matrix.Identity;
+        }
+        else
+        {
+            camera.UpdateMatrices();
+            _effect.Projection = camera.Projection;
+            _effect.View = camera.View * camera.TranslationMatrix;
+        }
+
         SpriteBatch.Begin(
-            blendState: BlendState.AlphaBlend,
-            samplerState: SamplerState.PointClamp,
-            effect: _effect,
-            rasterizerState: RasterizerState.CullNone,
-            sortMode: SpriteSortMode.BackToFront
-        );
+                blendState: BlendState.AlphaBlend,
+                samplerState: SamplerState.PointClamp,
+                effect: _effect,
+                rasterizerState: RasterizerState.CullNone,
+                sortMode: SpriteSortMode.BackToFront
+                );
     }
 
     public void End()
