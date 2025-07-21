@@ -1,6 +1,7 @@
 using ImGuiNET;
 using Karin.Events;
 using Karin.Inputs;
+using Karin.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.ImGuiNet;
@@ -12,7 +13,6 @@ public class Application
     public static Application Instance { get; private set; } = null!;
     public InputManager InputManager { get; private set; } = new InputManager();
     public Scene CurrentScene { get; set; } = null!;
-    public Game Game { get; private set; }
     float fixedDeltaTime = 1f / 50f;
     float accumulatedTime = 0f;
     public ImGuiRenderer ImGuiRenderer;
@@ -29,8 +29,10 @@ public class Application
         {
             throw new InvalidOperationException("Application instance already exists.");
         }
+        AppGlobals.Renderer = new Renderer(game);
+        AppGlobals.GraphicsDevice = game.GraphicsDevice;
+        AppGlobals.Game = game;
         Instance = this;
-        Game = game;
         InputManager.OnEvent += OnEvent;
         ImGuiRenderer = new ImGuiRenderer(game);
         GameStats = new GameStats();
@@ -57,7 +59,10 @@ public class Application
     public void Draw(GameTime gameTime)
     {
         GameStats.Draw(gameTime);
+
+        AppGlobals.Renderer.Begin();
         CurrentScene.Draw(gameTime);
+        AppGlobals.Renderer.End();
 
         ImGuiRenderer.BeginLayout(gameTime);
 

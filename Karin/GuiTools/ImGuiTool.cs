@@ -1,4 +1,4 @@
-namespace Karin;
+namespace Karin.GuiTools;
 
 public class ImGuiTool
 {
