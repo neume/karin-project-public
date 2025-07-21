@@ -1,27 +1,10 @@
-using DefaultEcs;
-using DefaultEcs.System;
 using Microsoft.Xna.Framework;
 
-namespace Karin;
+namespace Karin.TileMaps;
 
-
-public class TileMapSystem : AEntitySetSystem<float>
+public static class TileMap
 {
-    public TileMapSystem(World world)
-        : base(world.GetEntities().With<TileMapComponent>().AsSet())
-    {
-    }
-
-    protected override void Update(float state, in Entity entity)
-    {
-        var tileMapComponent = entity.Get<TileMapComponent>();
-
-        DrawTileMap(tileMapComponent);
-    }
-
-    // Private Methods
-
-    private void DrawTileMap(TileMapComponent tileMapComponent)
+    public static void DrawTileMap(TileMapComponent tileMapComponent, float zIndex = 0)
     {
         if (!tileMapComponent.IsVisible)
             return;
@@ -35,11 +18,11 @@ public class TileMapSystem : AEntitySetSystem<float>
                 tileMapComponent.TileHeight
             );
             Rectangle src = GetTileRectangle(item.Value, tileMapComponent);
-            AppGlobals.Renderer.Draw(tileMapComponent.TextureAtlas, src, dest, Color.White);
+            AppGlobals.Renderer.Draw(tileMapComponent.TextureAtlas, src, dest, Color.White, zIndex);
         }
     }
 
-    private Rectangle GetTileRectangle(int index, TileMapComponent tileMapComponent)
+    private static Rectangle GetTileRectangle(int index, TileMapComponent tileMapComponent)
     {
         if(tileMapComponent.TextureStore.ContainsKey(index))
             return tileMapComponent.TextureStore[index];
@@ -51,7 +34,7 @@ public class TileMapSystem : AEntitySetSystem<float>
         return rectangle;
     }
 
-    private Rectangle CalculateRectangle(int index, TileMapComponent tileMapComponent)
+    private static Rectangle CalculateRectangle(int index, TileMapComponent tileMapComponent)
     {
         int colCount = tileMapComponent.TextureAtlas.Width / tileMapComponent.TileWidth;
         int rowCount = tileMapComponent.TextureAtlas.Height / tileMapComponent.TileHeight;

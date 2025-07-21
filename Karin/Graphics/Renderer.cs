@@ -26,7 +26,8 @@ public class Renderer : IDisposable
         _effect.Texture = null;
         _effect.World = Matrix.Identity;
         _effect.View = Matrix.Identity;
-        _effect.Projection = Matrix.Identity;
+        Viewport viewport = _game.GraphicsDevice.Viewport;
+        _effect.Projection = Matrix.CreateOrthographicOffCenter(0, viewport.Width, 0, viewport.Height, 0f, 1f);
     }
 
     public void Dispose()
@@ -41,15 +42,13 @@ public class Renderer : IDisposable
 
     public void Begin()
     {
-        Viewport viewport = _game.GraphicsDevice.Viewport;
-        _effect.Projection = Matrix.CreateOrthographicOffCenter(0, viewport.Width, 0, viewport.Height, 0f, 1f);
-        _effect.View = Matrix.Identity;
-
         SpriteBatch.Begin(
-                blendState: BlendState.AlphaBlend,
-                samplerState: SamplerState.PointClamp,
-                effect: _effect,
-                rasterizerState: RasterizerState.CullNone);
+            blendState: BlendState.AlphaBlend,
+            samplerState: SamplerState.PointClamp,
+            effect: _effect,
+            rasterizerState: RasterizerState.CullNone,
+            sortMode: SpriteSortMode.BackToFront
+        );
     }
 
     public void End()
@@ -57,25 +56,15 @@ public class Renderer : IDisposable
         SpriteBatch.End();
     }
 
-    public void Draw(Texture2D texture, Vector2 origin, Vector2 position, Color color)
+    public void Draw(Texture2D texture, Rectangle? sourceRectangle, Rectangle destinationRectangle, Color color, float zIndex = 0)
     {
-        SpriteBatch.Draw(texture, position, null, color, 0f, origin, 1f, SpriteEffects.FlipVertically, 0f);
+        SpriteBatch.Draw(texture, destinationRectangle, sourceRectangle, color, 0f, Vector2.Zero, SpriteEffects.FlipVertically, zIndex * -1);
     }
 
-    public void Draw(Texture2D texture, Rectangle? sourceRectangle, Rectangle destinationRectangle, Color color)
-    {
-        SpriteBatch.Draw(texture, destinationRectangle, sourceRectangle, color, 0f, Vector2.Zero, SpriteEffects.FlipVertically, 0f);
-    }
-
-    public void Draw(Texture2D texture, Rectangle sourceRectangle, Vector2 position, Color color)
-    {
-        SpriteBatch.Draw(texture, position, sourceRectangle, color, 0f, Vector2.Zero, 1f, SpriteEffects.FlipVertically, 0f);
-    }
-
-    public void Draw(Texture2D texture, Vector2 position)
+    public void Draw(Texture2D texture, Vector2 position, float zIndex)
     {
         var color = Color.White;
-        SpriteBatch.Draw(texture, position, null, color, 0f, Vector2.Zero, 1f, SpriteEffects.FlipVertically, 0f);
+        SpriteBatch.Draw(texture, position, null, color, 0f, Vector2.Zero, 1f, SpriteEffects.FlipVertically, zIndex * -1);
     }
 
 }

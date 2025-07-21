@@ -5,6 +5,7 @@ using Karin.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.ImGuiNet;
+using Karin.GuiTools;
 
 namespace Karin;
 
