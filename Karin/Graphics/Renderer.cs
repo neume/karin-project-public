@@ -51,7 +51,7 @@ public class Renderer : IDisposable
         {
             camera.UpdateMatrices();
             _effect.Projection = camera.Projection;
-            _effect.View = camera.View * camera.TranslationMatrix;
+            _effect.View = camera.View;
         }
 
         SpriteBatch.Begin(
@@ -66,6 +66,11 @@ public class Renderer : IDisposable
     public void End()
     {
         SpriteBatch.End();
+    }
+
+    public void Draw(Texture2D texture, Vector2 position, Rectangle sourceRectangle, float zIndex = 0)
+    {
+        SpriteBatch.Draw(texture, position, sourceRectangle, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.FlipVertically, zIndex * -1);
     }
 
     public void Draw(Texture2D texture, Rectangle? sourceRectangle, Rectangle destinationRectangle, Color color, float zIndex = 0)

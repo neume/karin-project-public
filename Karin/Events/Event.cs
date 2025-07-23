@@ -19,6 +19,7 @@ public enum EventType
     KeyDown,
     KeyPressed,
     KeyReleased,
+    KeyRepeated,
     MouseButtonPressed,
     MouseButtonReleased,
     MouseMoved,

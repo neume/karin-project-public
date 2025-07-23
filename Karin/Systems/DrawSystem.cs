@@ -33,6 +33,7 @@ public class DrawSystem : AEntitySetSystem<float>
 
         AppGlobals.Renderer.Draw(spriteComponent.Texture,
                                 spriteComponent.Position,
+                                spriteComponent.SourceRectangle,
                                 drawInfoComponent.ZIndex);
     }
 

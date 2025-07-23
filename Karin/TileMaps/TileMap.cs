@@ -27,8 +27,6 @@ public static class TileMap
         if(tileMapComponent.TextureStore.ContainsKey(index))
             return tileMapComponent.TextureStore[index];
 
-        Console.WriteLine($"TileMapSystem: Loading tile {index}");
-
         var rectangle = CalculateRectangle(index,tileMapComponent);
         tileMapComponent.TextureStore.Add(index, rectangle);
         return rectangle;
