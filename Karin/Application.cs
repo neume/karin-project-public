@@ -12,10 +12,10 @@ public class Application
     public static Application Instance { get; private set; } = null!;
     public InputManager InputManager { get; private set; } = new InputManager();
     public Scene CurrentScene { get; set; } = null!;
-    float fixedDeltaTime = 1f / 50f;
+    float fixedDeltaTime = 1f / AppConfig.FUPS;
     float accumulatedTime = 0f;
     public ImGuiRenderer ImGuiRenderer;
-    public List<ImGuiTool> Tools = new List<ImGuiTool>();
+    public ToolManager Tools = new ToolManager();
     public GameStats GameStats = new GameStats();
 
     public delegate void ApplicationEventHandler(Event e);
@@ -71,11 +71,8 @@ public class Application
         AppGlobals.Screen.Present(AppGlobals.Renderer);
 
         ImGuiRenderer.BeginLayout(gameTime);
-
-        Tools.ForEach(tool => tool.Render());
-
+        Tools.Render();
         ImGuiRenderer.EndLayout();
-
     }
 
     public void FixedUpdate(GameTime gameTime)

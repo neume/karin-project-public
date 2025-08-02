@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Karin.Components;
 
 namespace Karin.TileMaps;
 

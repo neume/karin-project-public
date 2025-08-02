@@ -4,23 +4,20 @@ using Karin.Components;
 
 namespace Karin.GuiTools;
 
-public class EntityTool : ImGuiTool
+public class EntityTool : ToolBase
 {
     public EntityTool(bool active = false) : base(active) {}
 
-    public override void Render()
+    public override void Draw()
     {
         var set = Application.Instance.CurrentScene.World.GetEntities().With<TagComponent>().AsSet();
 
-        if(Active)
-        {
-            ImGui.Begin("Entities", ref Active);
-            ImGui.Text($"Count: {set.Count}");
+        ImGui.Begin("Entities", ref Active);
+        ImGui.Text($"Count: {set.Count}");
 
-            ListEntities(set);
+        ListEntities(set);
 
-            ImGui.End();
-        }
+        ImGui.End();
     }
 
     public void ListEntities(EntitySet set)
@@ -34,24 +31,43 @@ public class EntityTool : ImGuiTool
         {
             var name = entity.Get<TagComponent>().Name;
 
-            if (ImGui.CollapsingHeader($"{name}"))
+
+            if (ImGui.CollapsingHeader($"{name}##{counter}"))
             {
-                if(entity.Has<DrawInfoComponent>())
+                if(ImGui.CollapsingHeader($"Components##{counter}", ImGuiTreeNodeFlags.DefaultOpen))
                 {
-                    var drawInfoComponent = entity.Get<DrawInfoComponent>();
-                    float zIndex = drawInfoComponent.ZIndex;
-                    if (ImGui.InputFloat($"ZIndex##{counter}", ref zIndex))
-                    {
-                        drawInfoComponent.ZIndex = zIndex;
-                        entity.Set(drawInfoComponent);
-                    }
+                    ListComponents(entity, counter);
                 }
+
                 if(ImGui.Button($"Delete##{counter}"))
                 {
                     entity.Dispose();
                 }
             }
             counter++;
+        }
+    }
+
+    private void ListComponents(Entity entity, int id)
+    {
+        foreach (var type in AppGlobals.GetInspectableTypes())
+        {
+            var hasMethod = typeof(Entity).GetMethod("Has")!.MakeGenericMethod(type);
+
+            if (!(bool)hasMethod.Invoke(entity, null)!) continue;
+
+            var getMethod = typeof(Entity).GetMethod("Get")!.MakeGenericMethod(type);
+            var component = getMethod.Invoke(entity, null);
+
+            string componentName = component.GetType().Name;
+
+            if(ImGui.Button($"{componentName}##{id}"))
+            {
+                var componentTool = new ComponentTool(true);
+                componentTool.SetComponent(component);
+                componentTool.SetEntity(entity);
+                ToolManager.Add(componentTool);
+            }
         }
     }
 }
