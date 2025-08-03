@@ -1,18 +1,13 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Karin.GuiTools;
 namespace Karin.Components;
 
 [ToolInspectable]
 public struct SpriteComponent
 {
-    // [ToolSerializeField("Texture")]
-    public Texture2D Texture;
-
-    [ToolSerializeField("SpriteName")]
+    [ToolSerializeField("SpriteName", false)]
     public string SpriteName;
 
-    // [ToolSerializeField("Source Rectangle")]
     public Rectangle SourceRectangle;
 
     [ToolSerializeField("Position")]

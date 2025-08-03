@@ -2,6 +2,7 @@ using System.Numerics;
 using DefaultEcs;
 using DefaultEcs.System;
 using Karin.Components;
+using Karin.Graphics;
 using Karin.TileMaps;
 
 namespace Karin.Systems;
@@ -38,7 +39,9 @@ public class DrawSystem : AEntitySetSystem<float>
         if (!drawInfoComponent.IsVisible)
             return;
 
-        AppGlobals.Renderer.Draw(spriteComponent.Texture,
+        var texture = TextureManager.GetTexture(spriteComponent.SpriteName);
+
+        AppGlobals.Renderer.Draw(texture,
                                 transformComponent.Position,
                                 spriteComponent.SourceRectangle,
                                 drawInfoComponent.ZIndex);
@@ -49,6 +52,13 @@ public class DrawSystem : AEntitySetSystem<float>
         var tileMapComponent = entity.Get<TileMapComponent>();
         var drawInfoComponent = entity.Get<DrawInfoComponent>();
 
-        TileMap.DrawTileMap(tileMapComponent, drawInfoComponent.ZIndex); 
+        if (!drawInfoComponent.IsVisible)
+            return;
+
+        if(!entity.Has<TransformComponent>())
+            return;
+        var transformComponent = entity.Get<TransformComponent>();
+
+        TileMap.DrawTileMap(tileMapComponent, transformComponent, drawInfoComponent.ZIndex);
     }
 }
