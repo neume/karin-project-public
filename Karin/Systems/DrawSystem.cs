@@ -31,6 +31,9 @@ public class DrawSystem : AEntitySetSystem<float>
         var spriteComponent = entity.Get<SpriteComponent>();
         var drawInfoComponent = entity.Get<DrawInfoComponent>();
 
+        if (!drawInfoComponent.IsVisible)
+            return;
+
         AppGlobals.Renderer.Draw(spriteComponent.Texture,
                                 spriteComponent.Position,
                                 spriteComponent.SourceRectangle,

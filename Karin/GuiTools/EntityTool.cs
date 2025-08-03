@@ -10,7 +10,8 @@ public class EntityTool : ToolBase
 
     public override void Draw()
     {
-        var set = Application.Instance.CurrentScene.World.GetEntities().With<TagComponent>().AsSet();
+        var set = Application.Instance.CurrentScene.World.GetEntities()
+            .With<TagComponent>().With<IdentityComponent>().AsSet();
 
         ImGui.Begin("Entities", ref Active);
         ImGui.Text($"Count: {set.Count}");
@@ -61,11 +62,15 @@ public class EntityTool : ToolBase
 
             string componentName = component.GetType().Name;
 
+            var identityComponent = entity.Get<IdentityComponent>();
+
             if(ImGui.Button($"{componentName}##{id}"))
             {
-                var componentTool = new ComponentTool(true);
-                componentTool.SetComponent(component);
-                componentTool.SetEntity(entity);
+                var componentTool = new ComponentTool(
+                        Application.Instance.CurrentScene.World,
+                        identityComponent.Id,
+                        true);
+                componentTool.SetComponentType(type);
                 ToolManager.Add(componentTool);
             }
         }
