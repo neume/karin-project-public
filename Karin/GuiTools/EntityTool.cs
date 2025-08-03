@@ -8,6 +8,10 @@ public class EntityTool : ToolBase
 {
     public EntityTool(bool active = false) : base(active) {}
 
+    public EntityTool() : base(true) {
+        GroupId = "Entities";
+    }
+
     public override void Draw()
     {
         var set = Application.Instance.CurrentScene.World.GetEntities()
@@ -23,7 +27,6 @@ public class EntityTool : ToolBase
 
     public void ListEntities(EntitySet set)
     {
-
         Span<Entity> entities = stackalloc Entity[set.Count];
         set.GetEntities().CopyTo(entities);
 
@@ -37,7 +40,7 @@ public class EntityTool : ToolBase
             {
                 if(ImGui.CollapsingHeader($"Components##{counter}", ImGuiTreeNodeFlags.DefaultOpen))
                 {
-                    ListComponents(entity, counter);
+                    ListComponents(entity);
                 }
 
                 if(ImGui.Button($"Delete##{counter}"))
@@ -49,7 +52,7 @@ public class EntityTool : ToolBase
         }
     }
 
-    private void ListComponents(Entity entity, int id)
+    private void ListComponents(Entity entity)
     {
         foreach (var type in AppGlobals.GetInspectableTypes())
         {
@@ -64,14 +67,19 @@ public class EntityTool : ToolBase
 
             var identityComponent = entity.Get<IdentityComponent>();
 
-            if(ImGui.Button($"{componentName}##{id}"))
+            if(ImGui.Button($"{componentName}##{identityComponent.Id}"))
             {
-                var componentTool = new ComponentTool(
-                        Application.Instance.CurrentScene.World,
-                        identityComponent.Id,
-                        true);
-                componentTool.SetComponentType(type);
-                ToolManager.Add(componentTool);
+                string groupId = $"{identityComponent.Id}_{componentName}";
+                if(!ToolManager.ContainsGroupId(groupId))
+                {
+                    var componentTool = new ComponentTool(
+                            Application.Instance.CurrentScene.World,
+                            identityComponent.Id,
+                            true);
+                    componentTool.SetGroupId(groupId);
+                    componentTool.SetComponentType(type);
+                    ToolManager.Add(componentTool);
+                }
             }
         }
     }

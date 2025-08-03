@@ -3,9 +3,13 @@ namespace Karin.GuiTools;
 public class ToolBase
 {
     public bool Active;
+    public string GroupId;
     protected ToolManager? ToolManager;
 
-    public ToolBase(bool active = false) => Active = active;
+    public ToolBase(bool active = false) {
+        Active = active;
+        GroupId = GetType().Name;
+    }
 
     public ToolBase(ToolManager toolManager, bool active = false)
         : this(active)
@@ -34,6 +38,8 @@ public class ToolBase
     {
         ToolManager?.Remove(this);
     }
+
+    public string SetGroupId(string groupId) => GroupId = groupId;
 
     public void SetActive(bool active) => Active = active;
 

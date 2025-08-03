@@ -48,84 +48,109 @@ public class ComponentTool : ToolBase
             if (attribute == null) continue;
 
             var label = attribute.Label ?? fieldInfo.Name;
+            var editable = attribute.Editable;
 
             object? fieldValue = fieldInfo.GetValue(freshComponentBoxed);
-            bool changed = false;
 
             if(fieldValue is Vector2 vector2Value)
-                DisplayVector2(label, ref vector2Value, ref freshComponentBoxed, fieldInfo, entity,ref changed);
-            else if(fieldValue is string stringValue)
-                DisplayString(label, ref stringValue, ref freshComponentBoxed, fieldInfo, entity, ref changed);
+                DisplayVector2(label, ref vector2Value, ref freshComponentBoxed, fieldInfo, entity, editable);
             else if(fieldValue is int intValue)
-                DisplayInt(label, ref intValue, ref freshComponentBoxed, fieldInfo, entity, ref changed);
+                DisplayInt(label, ref intValue, ref freshComponentBoxed, fieldInfo, entity, editable);
+            else if(fieldValue is string stringValue)
+                DisplayString(label, ref stringValue, ref freshComponentBoxed, fieldInfo, entity, editable);
             else if(fieldValue is float floatValue)
-                DisplayFloat(label, ref floatValue, ref freshComponentBoxed, fieldInfo, entity, ref changed);
+                DisplayFloat(label, ref floatValue, ref freshComponentBoxed, fieldInfo, entity, editable);
             else if(fieldValue is bool boolValue)
-                DisplayBool(label, ref boolValue, ref freshComponentBoxed, fieldInfo, entity, ref changed);
-            
+                DisplayBool(label, ref boolValue, ref freshComponentBoxed, fieldInfo, entity, editable);
 
-
-            if(changed)
-            {
-                entity.Set(freshComponentBoxed);
-            }
         }
         ImGui.End();
     }
 
-    private void DisplayVector2(string label, ref Vector2 value, ref object component, FieldInfo fieldInfo, Entity entity, ref bool changed)
+    private void DisplayVector2(string label, ref Vector2 value, ref object component, FieldInfo fieldInfo, Entity entity, bool editable)
     {
         System.Numerics.Vector2 vector2 = new System.Numerics.Vector2(value.X, value.Y);
 
-        if (ImGui.InputFloat2($"{label}##{fieldInfo.Name}", ref vector2))
+        if (editable)
         {
-            var updatedValue = new Vector2(vector2.X, vector2.Y);
+            if (ImGui.InputFloat2($"{label}##{fieldInfo.Name}", ref vector2))
+            {
+                var updatedValue = new Vector2(vector2.X, vector2.Y);
 
 
-            object boxedComponent = component;
+                object boxedComponent = component;
 
-            fieldInfo.SetValue(boxedComponent, updatedValue);
-            SetComponent(entity, boxedComponent);
+                fieldInfo.SetValue(boxedComponent, updatedValue);
+                SetComponent(entity, boxedComponent);
+            }
+        }
+        else
+            if (ImGui.InputFloat2($"{label}##{fieldInfo.Name}", ref vector2)) {}
+    }
+
+    private void DisplayString(string label, ref string value, ref object component, FieldInfo fieldInfo, Entity entity, bool editable)
+    {
+        if (editable)
+        {
+            if (ImGui.InputText($"{label}##{fieldInfo.Name}", ref value, 100))
+            {
+                object boxedComponent = component;
+                fieldInfo.SetValue(boxedComponent, value);
+                SetComponent(entity, boxedComponent);
+            }
+        }
+        else
+            if (ImGui.InputText($"{label}##{fieldInfo.Name}", ref value, 100)) {}
+    }
+
+    private void DisplayInt(string label, ref int value, ref object component, FieldInfo fieldInfo, Entity entity, bool editable)
+    {
+        if (editable)
+        {
+            if (ImGui.InputInt($"{label}##{fieldInfo.Name}", ref value))
+            {
+                object boxedComponent = component;
+                fieldInfo.SetValue(boxedComponent, value);
+                SetComponent(entity, boxedComponent);
+            }
+        }
+        else
+        {
+            if (ImGui.InputInt($"{label}##{fieldInfo.Name}", ref value)) {}
         }
     }
 
-    private void DisplayString(string label, ref string value, ref object component, FieldInfo fieldInfo, Entity entity, ref bool changed)
+    private void DisplayFloat(string label, ref float value, ref object component, FieldInfo fieldInfo, Entity entity, bool editable)
     {
-        if (ImGui.InputText($"{label}##{fieldInfo.Name}", ref value, 100))
+        if (editable)
         {
-            object boxedComponent = component;
-            fieldInfo.SetValue(boxedComponent, value);
-            SetComponent(entity, boxedComponent);
+            if (ImGui.InputFloat($"{label}##{fieldInfo.Name}", ref value))
+            {
+                object boxedComponent = component;
+                fieldInfo.SetValue(boxedComponent, value);
+                SetComponent(entity, boxedComponent);
+            }
+        }
+        else
+        {
+            if (ImGui.InputFloat($"{label}##{fieldInfo.Name}", ref value)) {}
         }
     }
 
-    private void DisplayInt(string label, ref int value, ref object component, FieldInfo fieldInfo, Entity entity, ref bool changed)
+    private void DisplayBool(string label, ref bool value, ref object component, FieldInfo fieldInfo, Entity entity, bool editable)
     {
-        if (ImGui.InputInt($"{label}##{fieldInfo.Name}", ref value))
+        if (editable)
         {
-            object boxedComponent = component;
-            fieldInfo.SetValue(boxedComponent, value);
-            SetComponent(entity, boxedComponent);
+            if (ImGui.Checkbox($"{label}##{fieldInfo.Name}", ref value))
+            {
+                object boxedComponent = component;
+                fieldInfo.SetValue(boxedComponent, value);
+                SetComponent(entity, boxedComponent);
+            }
         }
-    }
-
-    private void DisplayFloat(string label, ref float value, ref object component, FieldInfo fieldInfo, Entity entity, ref bool changed)
-    {
-        if (ImGui.InputFloat($"{label}##{fieldInfo.Name}", ref value))
+        else
         {
-            object boxedComponent = component;
-            fieldInfo.SetValue(boxedComponent, value);
-            SetComponent(entity, boxedComponent);
-        }
-    }
-
-    private void DisplayBool(string label, ref bool value, ref object component, FieldInfo fieldInfo, Entity entity, ref bool changed)
-    {
-        if (ImGui.Checkbox($"{label}##{fieldInfo.Name}", ref value))
-        {
-            object boxedComponent = component;
-            fieldInfo.SetValue(boxedComponent, value);
-            SetComponent(entity, boxedComponent);
+            if (ImGui.Checkbox($"{label}##{fieldInfo.Name}", ref value)) {}
         }
     }
 

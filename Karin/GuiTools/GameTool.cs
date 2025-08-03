@@ -7,7 +7,6 @@ public class GameTool : ToolBase
 {
     public GameTool(bool active = false) : base(active) {}
 
-
     public override void Draw()
     {
         ImGui.Begin("Game Stats", ref Active);
@@ -20,5 +19,8 @@ public class GameTool : ToolBase
         text = "Elapsed Time: " + Application.Instance.GameStats.TotalElapsedTimeFormatted();
         ImGui.TextColored(new Vector4(1, 1, 0, 1), text);
         ImGui.End();
+
+        if(!Active)
+            Remove();
     }
 }
