@@ -29,13 +29,17 @@ public class DrawSystem : AEntitySetSystem<float>
     private void drawSprite(in Entity entity)
     {
         var spriteComponent = entity.Get<SpriteComponent>();
+        if (!entity.Has<TransformComponent>())
+            return;
+
+        var transformComponent = entity.Get<TransformComponent>();
         var drawInfoComponent = entity.Get<DrawInfoComponent>();
 
         if (!drawInfoComponent.IsVisible)
             return;
 
         AppGlobals.Renderer.Draw(spriteComponent.Texture,
-                                spriteComponent.Position,
+                                transformComponent.Position,
                                 spriteComponent.SourceRectangle,
                                 drawInfoComponent.ZIndex);
     }

@@ -9,6 +9,9 @@ public struct SpriteComponent
     // [ToolSerializeField("Texture")]
     public Texture2D Texture;
 
+    [ToolSerializeField("SpriteName")]
+    public string SpriteName;
+
     // [ToolSerializeField("Source Rectangle")]
     public Rectangle SourceRectangle;
 
