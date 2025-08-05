@@ -1,20 +1,21 @@
 using DefaultEcs.System;
+using Microsoft.Xna.Framework;
 
 public class SystemsManager
 {
-    public Dictionary<ISystem<float>, int> Systems;
-    public List<ISystem<float>> SortedSystems { get; private set; }
+    public Dictionary<ISystem<GameTime>, int> Systems;
+    public List<ISystem<GameTime>> SortedSystems { get; private set; }
     public int NextSortValue = 0;
 
     public SystemsManager()
     {
-        Systems = new Dictionary<ISystem<float>, int>();
-        SortedSystems = new List<ISystem<float>>();
+        Systems = new Dictionary<ISystem<GameTime>, int>();
+        SortedSystems = new List<ISystem<GameTime>>();
         NextSortValue = 0;
     }
 
 
-    public void Add(ISystem<float> system, int? sortValue = null)
+    public void Add(ISystem<GameTime> system, int? sortValue = null)
     {
         var assignedSortValue = sortValue ?? NextSortValue;
 
@@ -29,7 +30,7 @@ public class SystemsManager
         SortSystems();
     }
 
-    public void Remove(ISystem<float> system)
+    public void Remove(ISystem<GameTime> system)
     {
         SortedSystems.Remove(system);
         Systems.Remove(system);
@@ -37,7 +38,7 @@ public class SystemsManager
         NextSortValue = MaxSortValue() + 1;
     }
 
-    public void Update(float state)
+    public void Update(GameTime state)
     {
         foreach (var system in SortedSystems)
             system.Update(state);

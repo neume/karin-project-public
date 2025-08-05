@@ -1,20 +1,20 @@
-using System.Numerics;
 using DefaultEcs;
 using DefaultEcs.System;
 using Karin.Components;
 using Karin.Graphics;
 using Karin.TileMaps;
+using Microsoft.Xna.Framework;
 
 namespace Karin.Systems;
 
-public class DrawSystem : AEntitySetSystem<float>
+public class DrawSystem : AEntitySetSystem<GameTime>
 {
     public DrawSystem(World world)
         : base(world.GetEntities().With<DrawInfoComponent>().AsSet())
     {
     }
 
-    protected override void Update(float state, in Entity entity)
+    protected override void Update(GameTime gameTime, in Entity entity)
     {
         if (entity.Has<SpriteComponent>())
         {
@@ -40,6 +40,9 @@ public class DrawSystem : AEntitySetSystem<float>
             return;
 
         var texture = TextureManager.GetTexture(spriteComponent.SpriteName);
+
+        if (texture == null)
+            return;
 
         AppGlobals.Renderer.Draw(texture,
                                 transformComponent.Position,
