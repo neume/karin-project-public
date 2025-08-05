@@ -8,7 +8,9 @@ public class ToolBase
 
     public ToolBase(bool active = false) {
         Active = active;
-        GroupId = GetType().Name;
+
+        if(GroupId == null)
+            GroupId = GetType().Name;
     }
 
     public ToolBase(ToolManager toolManager, bool active = false)
