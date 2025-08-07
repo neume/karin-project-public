@@ -1,14 +1,19 @@
-using DefaultEcs;
+using ECS = DefaultEcs;
 using Microsoft.Xna.Framework;
+using Aether = nkast.Aether.Physics2D.Dynamics;
+using Karin.Physics;
 
 namespace Karin;
 
 public class Scene
 {
-    public World World { get; private set; } = new World();
+    public ECS.World World { get; private set; } = new ECS.World();
+    public Aether.World PhysicsWorld { get; private set; } = new Aether.World();
+    public PhysicsBodyManager PhysicsBodyManager { get; private set; }
 
     public Scene()
     {
+        PhysicsBodyManager = new PhysicsBodyManager(PhysicsWorld);
     }
 
     public virtual void Start()

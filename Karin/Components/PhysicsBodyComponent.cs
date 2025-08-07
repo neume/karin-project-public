@@ -15,4 +15,10 @@ public struct PhysicsBodyComponent
 
     [ToolSerializeField("Velocity")]
     public Vector2 Velocity;
+
+    public int? ReferenceBody;
+
+    public float? Restitution;
+    public float? Friction;
+
 }
