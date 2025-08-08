@@ -7,6 +7,7 @@ namespace Karin.Components;
 public struct TileMapComponent
 {
     public Dictionary<Vector2, int> Map;
+    public string MapPath;
     public Dictionary<int, Rectangle> TextureStore;
     public string TextureName;
 
@@ -18,12 +19,12 @@ public struct TileMapComponent
 
     [ToolSerializeField("Tile Height")]
     public int TileHeight;
+    public bool Loaded;
 
     public TileMapComponent(){
         IsVisible = false;
         TileWidth = 32;
         TileHeight = 32;
         TextureStore = new Dictionary<int, Rectangle>();
-        Map = new Dictionary<Vector2, int>();
     }
 }

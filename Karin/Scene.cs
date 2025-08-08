@@ -10,9 +10,15 @@ public class Scene
     public ECS.World World { get; private set; } = new ECS.World();
     public Aether.World PhysicsWorld { get; private set; } = new Aether.World();
     public PhysicsBodyManager PhysicsBodyManager { get; private set; }
+    public SystemsManager DrawSystemsManager;
+    public SystemsManager UpdateSystemsManager;
+    public SystemsManager FixedUpdateSystemsManager;
 
     public Scene()
     {
+        DrawSystemsManager = new SystemsManager();
+        UpdateSystemsManager = new SystemsManager();
+        FixedUpdateSystemsManager = new SystemsManager();
         PhysicsBodyManager = new PhysicsBodyManager(PhysicsWorld);
     }
 
