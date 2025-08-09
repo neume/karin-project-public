@@ -4,9 +4,6 @@ using Microsoft.Xna.Framework;
 [ToolInspectable]
 public struct PhysicsBodyComponent
 {
-    [ToolSerializeField("Body", false)]
-    public string Body;
-
     [ToolSerializeField("Is Kinematic")]
     public bool IsKinematic;
 
@@ -16,6 +13,7 @@ public struct PhysicsBodyComponent
     [ToolSerializeField("Velocity")]
     public Vector2 Velocity;
 
+    [ToolSerializeField("Reference Body", false)]
     public int? ReferenceBody;
 
     public float? Restitution;

@@ -23,9 +23,8 @@ public class TilemapFileLoaderSystem : AEntitySetSystem<GameTime>
         if (tileMapComponent.Loaded)
             return;
 
-        DebugHelper.Log($"Loading tilemap: {tileMapComponent.MapPath}");
-
         tileMapComponent.Map = Util.LoadTileMap(tileMapComponent.MapPath);
+
         tileMapComponent.Loaded = true;
     }
 }
