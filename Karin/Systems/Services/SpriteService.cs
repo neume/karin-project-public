@@ -33,9 +33,12 @@ public class SpriteService : ISystemService
         if (texture == null)
             return;
 
+        
+        var zIndexVariationFromPosition = -(transformComponent.Position.Y / 10000f);
+
         AppGlobals.Renderer.Draw(texture,
                                 transformComponent.Position,
                                 spriteComponent.SourceRectangle,
-                                drawInfoComponent.ZIndex);
+                                drawInfoComponent.ZIndex + zIndexVariationFromPosition);
     }
 }

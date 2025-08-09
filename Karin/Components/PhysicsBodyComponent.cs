@@ -18,5 +18,8 @@ public struct PhysicsBodyComponent
 
     public float? Restitution;
     public float? Friction;
+    public float Radius;
+    public float? LinearDamping;
+    public float? AngularDamping;
 
 }

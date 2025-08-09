@@ -43,14 +43,20 @@ public class PhysicsBodyCreationSystem : AEntitySetSystem<GameTime>
         else
             bodyType = Aether.BodyType.Dynamic;
 
+
         var body = _physicsWorld.CreateBody(
                 transformComponent.Position,
                 physicsBodyComponent.Mass,
                 bodyType
             );
 
-        var radius = 1f;
-        Aether.Fixture fixture = body.CreateCircle(radius, 1f);
+        if(physicsBodyComponent.LinearDamping.HasValue)
+            body.LinearDamping = physicsBodyComponent.LinearDamping.Value;
+
+        if(physicsBodyComponent.AngularDamping.HasValue)
+            body.AngularDamping = physicsBodyComponent.AngularDamping.Value;
+
+        Aether.Fixture fixture = body.CreateCircle(physicsBodyComponent.Radius, 1f);
         body.LinearVelocity = physicsBodyComponent.Velocity;
 
         if(physicsBodyComponent.Restitution.HasValue)

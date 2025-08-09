@@ -9,8 +9,4 @@ public struct SpriteComponent
     public string SpriteName;
 
     public Rectangle SourceRectangle;
-
-    // TODO: Remove position
-    [ToolSerializeField("Position")]
-    public Vector2 Position;
 }
