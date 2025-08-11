@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Aether = nkast.Aether.Physics2D.Dynamics;
 using Karin.Physics;
 using Karin.Core;
+using Karin.Spatials;
+using DefaultEcs;
 
 namespace Karin;
 
@@ -15,6 +17,7 @@ public class Scene
     public SystemsManager UpdateSystemsManager;
     public SystemsManager FixedUpdateSystemsManager;
     public IdAllocator EntityIdAllocator { get; private set; } = new IdAllocator();
+    public GridPartitioning? Grid { get; private set; }
 
     public Scene()
     {
@@ -54,5 +57,42 @@ public class Scene
 
     public virtual void Destroy()
     {
+    }
+
+    protected void InitGrid()
+    {
+        Grid = new GridPartitioning(10);
+    }
+
+    public List<Entity> FindEntities(float x, float y, float range)
+    {
+        if (Grid == null)
+            return new List<Entity>();
+
+        return Grid.Query(x, y, range).Select(p => p.Entity).ToList();
+    }
+
+    public List<Entity> FindEntities(float x, float y, float range, EntitySet set)
+    {
+        List<Entity> nearbyEntities = FindEntities(x, y, range);
+        List<Entity> result = new List<Entity>(nearbyEntities.Count);
+
+        if(nearbyEntities.Count > set.Count)
+        {
+            foreach(var entity in nearbyEntities)
+                if(set.Contains(entity))
+                    result.Add(entity);
+
+        }
+        else
+        {
+            var nearbySet = new HashSet<Entity>(nearbyEntities);
+
+            foreach(ref readonly var entity in set.GetEntities())
+                if(nearbySet.Contains(entity))
+                    result.Add(entity);
+        }
+
+        return result;
     }
 }

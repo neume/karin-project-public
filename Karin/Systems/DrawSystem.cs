@@ -22,7 +22,5 @@ public class DrawSystem : AEntitySetSystem<GameTime>
         {
             service.Execute(gameTime, entity);
         }
-
     }
-
 }
