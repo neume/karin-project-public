@@ -2,6 +2,7 @@ using ECS = DefaultEcs;
 using Microsoft.Xna.Framework;
 using Aether = nkast.Aether.Physics2D.Dynamics;
 using Karin.Physics;
+using Karin.Core;
 
 namespace Karin;
 
@@ -13,6 +14,7 @@ public class Scene
     public SystemsManager DrawSystemsManager;
     public SystemsManager UpdateSystemsManager;
     public SystemsManager FixedUpdateSystemsManager;
+    public IdAllocator EntityIdAllocator { get; private set; } = new IdAllocator();
 
     public Scene()
     {
