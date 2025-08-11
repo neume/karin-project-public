@@ -21,5 +21,4 @@ public struct PhysicsBodyComponent
     public float Radius;
     public float? LinearDamping;
     public float? AngularDamping;
-
 }
