@@ -1,39 +1,80 @@
 namespace Karin.Core;
 
 public class Bidictionary<TKey1, TValue>
+    where TKey1 : notnull
+    where TValue : notnull
 {
-    private readonly Dictionary<TKey1, TValue> _map1;
-    private readonly Dictionary<TValue, TKey1> _map2;
+    private readonly Dictionary<TKey1, TValue> _forward;
+    private readonly Dictionary<TValue, TKey1> _reverse;
 
     public Bidictionary()
     {
-        _map1 = new Dictionary<TKey1, TValue>();
-        _map2 = new Dictionary<TValue, TKey1>();
+        _forward = new Dictionary<TKey1, TValue>();
+        _reverse = new Dictionary<TValue, TKey1>();
     }
 
-    public void Add(TKey1 key, TValue value)
+    public int Count => _forward.Count;
+
+    public void Set(TKey1 key, TValue value)
     {
-        _map1[key] = value;
-        _map2[value] = key;
+        if (_forward.TryGetValue(key, out var oldValue))
+        {
+            if (!EqualityComparer<TValue>.Default.Equals(oldValue, value))
+            {
+                _reverse.Remove(oldValue);
+                _forward[key] = value;
+                _reverse[value] = key;
+            }
+
+            return;
+        }
+
+        if (_reverse.TryGetValue(value, out var oldKey))
+        {
+            _forward.Remove(oldKey);
+        }
+
+        _forward[key] = value;
+        _reverse[value] = key;
     }
 
-    public bool TryGetValue(TKey1 key, out TValue value)
-        => _map1.TryGetValue(key, out value);
+    public bool RemoveByKey(TKey1 key)
+    {
+        if (!_forward.TryGetValue(key, out var value))
+            return false;
 
-    public bool TryGetKey(TValue value, out TKey1 key)
-        => _map2.TryGetValue(value, out key);
+        _forward.Remove(key);
+        _reverse.Remove(value);
+
+        return true;
+    }
+
+    public bool RemoveByValue(TValue value)
+    {
+        if (!_reverse.TryGetValue(value, out var key))
+            return false;
+
+        _reverse.Remove(value);
+        _forward.Remove(key);
+        return true;
+    }
+
+    public bool TryGetValue(TKey1 key, out TValue? value)
+        => _forward.TryGetValue(key, out value);
+
+    public bool TryGetKey(TValue value, out TKey1? key)
+        => _reverse.TryGetValue(value, out key);
 
     public bool ContainsKey(TKey1 key)
-        => _map1.ContainsKey(key);
+        => _forward.ContainsKey(key);
 
     public bool ContainsValue(TValue value)
-        => _map2.ContainsKey(value);
+        => _reverse.ContainsKey(value);
 
     public bool Remove(TKey1 key)
-        => _map1.Remove(key);
+        => _forward.Remove(key);
     
     public bool Remove(TValue value)
-        => _map2.Remove(value);
+        => _reverse.Remove(value);
 
-    public int Count => _map1.Count;
 }
