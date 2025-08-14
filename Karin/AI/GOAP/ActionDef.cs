@@ -4,7 +4,7 @@ public class ActionDef
 {
     public int ActionId;
     public int ExecutorId;
-    public int Cost;
+    public float Cost;
     public Dictionary<int, int> Preconditions;
     public Dictionary<int, int> Effects;
 

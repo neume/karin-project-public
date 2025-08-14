@@ -1,5 +1,6 @@
 namespace Karin.AI.GOAP;
 
+// WARN: This is a singleton. Do not use it in a multi-threaded environment.
 public class GoalManager
 {
     public static GoalManager Instance { get; } = new();
@@ -18,8 +19,8 @@ public class GoalManager
     public void AddGoal(GoalDef goal)
     {
         _goals[goal.GoalId] = goal;
-        _goalsList.Add(goal.GoalId);
-        _goalsSet.Add(goal.GoalId);
+        if (_goalsSet.Add(goal.GoalId))
+            _goalsList.Add(goal.GoalId);
     }
 
     public void RemoveGoal(int goalId)

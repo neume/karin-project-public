@@ -5,12 +5,12 @@ public static class Planner
     class Node
     {
         public ActionDef? Action;
-        public Dictionary<int, int> RequiredState;
+        public Dictionary<int, int> RequiredStates;
         public List<Node> Children = new List<Node>();
         public Node? Parent;
         public float Cost;
 
-        public Node(Node? parent, float cost, ActionDef? action, Dictionary<int, int> states)
+        public Node(Node? parent, float cost, ActionDef? action, Dictionary<int, int> requiredStates)
         {
             this.Parent = parent;
             this.Action = action;
@@ -23,7 +23,7 @@ public static class Planner
                 this.Cost = cost;
             }
 
-            this.RequiredState = states;
+            this.RequiredStates = requiredStates;
         }
     }
 
@@ -37,11 +37,14 @@ public static class Planner
         chosenGoalId = -1;
         plannedActionIds = Array.Empty<int>();
 
+        goalIds = SortGoals(goalIds);
+
         foreach(var goalId in goalIds)
         {
             var goalDef = GoalManager.Instance.GetGoal(goalId);
 
-            if (Satisfies(goalDef, blackboard))
+            var need = ConvertToDictionary(goalDef.States);
+            if (!IsSatisfied(need, blackboard))
             {
                 if (TryPlanSingleGoal(goalDef, actionIds, blackboard, out var plan))
                 {
@@ -57,89 +60,97 @@ public static class Planner
 
     public static bool TryPlanSingleGoal(GoalDef goalDef, int[] actionIds, Dictionary<int, int> blackboard, out int[] plannedActionIds)
     {
+
         plannedActionIds = Array.Empty<int>();
 
-        List<Node> leaves = new List<Node>();
+        var desiredStates = ConvertToDictionary(goalDef.States);
 
-        var desiredState =  ConvertToDictionary(goalDef.States);
+        if (IsSatisfied(desiredStates, blackboard))
+            return true;
 
-        Node root = new Node(parent: null, cost: 0, action: null, states: desiredState);
+        var leaves = new List<Node>();
+        var root = new Node(parent: null, cost: 0, action: null, requiredStates: CloneDict(desiredStates));
 
-        BuildGraph(root, leaves, actionIds, blackboard);
+        // Filter to only known actions
+        var usable = ActionManager.Instance.GetActions(actionIds);
+        var visited = new HashSet<int>();
 
-        if (leaves.Count == 0)
-            return false;
+        BuildGraph(root, leaves, usable, blackboard, visited);
+        if (leaves.Count == 0) return false;
 
-        Node? cheapest = GetCheapestLeaf(leaves);
-
-        if (cheapest == null)
-            return false;
-
-        plannedActionIds = GetPlan(cheapest);
-
+        var cheapest = GetCheapestLeaf(leaves);
+        plannedActionIds = GetPlan(cheapest!);
         return true;
     }
 
-    private static bool Satisfies(GoalDef goalDef, Dictionary<int, int> blackboard)
+    private static int[] SortGoals(int[] goalIds)
     {
-        foreach (var state in goalDef.States)
-            if (!blackboard.ContainsKey(state.Key) || blackboard[state.Key] != state.Value)
+
+        return goalIds
+            .OrderByDescending(goalId => GoalManager.Instance.GetGoal(goalId).Priority)
+            .ToArray();
+    }
+
+    private static bool IsSatisfied(Dictionary<int, int> need, Dictionary<int, int> world)
+    {
+        foreach (var kv in need)
+            if (!world.TryGetValue(kv.Key, out var v) || v != kv.Value)
                 return false;
-
         return true;
     }
 
-    private static bool BuildGraph(Node parent, List<Node> leaves, int[] usableActions, Dictionary<int, int> worldboard)
+    private static bool BuildGraph(
+            Node parent,
+            List<Node> leaves,
+            int[] usableActions,
+            Dictionary<int, int> blackboard,
+            HashSet<int> visited)
     {
+        bool expanded = false;
+
         foreach (int actionId in usableActions)
         {
             var action = ActionManager.Instance.GetAction(actionId);
-            if(!HasAllEffects(action, parent.RequiredState))
+
+            var achieved = Intersect(parent.RequiredStates, action.Effects);
+            if (achieved.Count == 0)
                 continue;
 
-            Node child = new Node(
-                    parent,
-                    action.Cost,
-                    action,
-                    action.Preconditions);
-            parent.Children.Add(child);
+            var nextRequired = Regress(parent.RequiredStates, action.Effects, action.Preconditions);
 
-            if (GoalAchieved(child.RequiredState, worldboard))
-                leaves.Add(child);
-            else
+            if (IsSatisfied(nextRequired, blackboard))
             {
-                int[] subset = new int[usableActions.Length];
-
-                for(int i = 0; i < usableActions.Length; i++)
-                    if (actionId != action.ActionId)
-                        subset[i] = usableActions[i];
-                
-                BuildGraph(child, leaves, subset, worldboard);
+                var child = new Node(
+                        parent: parent,
+                        cost: action.Cost,
+                        action: action,
+                        requiredStates: CloneDict(nextRequired));
+                parent.Children.Add(child);
+                leaves.Add(child);
+                expanded = true;
+                continue;
             }
+
+            // Prune
+            var sig = Signature(nextRequired, usableActions, actionId);
+            if (!visited.Add(sig))
+                continue;
+
+            // var subset = RemoveOne(usableActions, actionId);
+
+            var childNode = new Node(
+                    parent: parent,
+                    cost: action.Cost,
+                    action: action,
+                    requiredStates: CloneDict(nextRequired));
+            parent.Children.Add(childNode);
+
+            // if (BuildGraph(childNode, leaves, subset, blackboard, visited))
+            if (BuildGraph(childNode, leaves, usableActions, blackboard, visited))
+                expanded = true;
         }
 
-        if (parent.Children.Count == 0)
-            return false;
-
-        return true;
-    }
-
-    private static bool HasAllEffects(ActionDef action, Dictionary<int, int> state)
-    {
-        foreach (KeyValuePair<int, int> effect in action.Effects)
-            if (!state.ContainsKey(effect.Key) || state[effect.Key] != effect.Value)
-                return false;
-
-        return true;
-    }
-
-    private static bool GoalAchieved(Dictionary<int, int> goal, Dictionary<int, int> states)
-    {
-        foreach (KeyValuePair<int, int> pair in goal)
-            if (!states.ContainsKey(pair.Key) || states[pair.Key] != pair.Value)
-                return false;
-
-        return true;
+        return expanded;
     }
 
     private static Node? GetCheapestLeaf(List<Node> leaves)
@@ -169,6 +180,8 @@ public static class Planner
                 break;
         }
 
+        plan.Reverse();
+
         return plan.ToArray();
     }
 
@@ -179,5 +192,66 @@ public static class Planner
             result[state.Key] = state.Value;
 
         return result;
+    }
+
+    // PERF: Refactor this Planner for performance. Do not use cloned dictionaries.
+    private static Dictionary<int, int> CloneDict(Dictionary<int, int> dictionary)
+    {
+        var clone = new Dictionary<int, int>(dictionary.Count);
+        foreach (var pair in dictionary) clone[pair.Key] = pair.Value;
+        return clone;
+    }
+
+    // private static int[] RemoveOne(int[] array, int value)
+    // {
+    //     var result = new int[array.Length - 1];
+    //     int counter = 0;
+    //     for (int i = 0; i < array.Length; i++)
+    //         if (array[i] != value) result[counter++] = array[i];
+    //     return result;
+    // }
+
+    // From chatgpt
+    private static int Signature(Dictionary<int, int> need, int[] actions, int removedAction)
+    {
+        unchecked
+        {
+            int h = 17;
+            foreach (var kv in need)
+            {
+                h = h * 31 + kv.Key.GetHashCode();
+                h = h * 31 + kv.Value.GetHashCode();
+            }
+            h = h * 31 + (actions.Length - 1);
+            h = h * 31 + removedAction.GetHashCode();
+            return h;
+        }
+    }
+
+    private static Dictionary<int, int> Intersect(Dictionary<int, int> required, Dictionary<int, int> effects)
+    {
+        var result = new Dictionary<int, int>();
+        foreach (var effect in effects)
+            if (required.TryGetValue(effect.Key, out var v) && v == effect.Value)
+                result[effect.Key] = effect.Value;
+        return result;
+    }
+
+    private static Dictionary<int, int> Regress(
+            Dictionary<int, int> required,
+            Dictionary<int, int> effects,
+            Dictionary<int, int> preconditions)
+    {
+        // next = required − effects
+        var next = new Dictionary<int, int>(required.Count + preconditions.Count);
+        foreach (var pair in required)
+            if (!effects.TryGetValue(pair.Key, out var effectValue) || effectValue != pair.Value)
+                next[pair.Key] = pair.Value;
+
+        // union with preconditions
+        foreach (var precondition in preconditions)
+            next[precondition.Key] = precondition.Value;
+
+        return next;
     }
 }

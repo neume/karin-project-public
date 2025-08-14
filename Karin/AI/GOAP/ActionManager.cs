@@ -1,5 +1,6 @@
 namespace Karin.AI.GOAP;
 
+// WARN: This is a singleton. Do not use it in a multi-threaded environment.
 public class ActionManager
 {
     public static ActionManager Instance { get; } = new();
@@ -18,8 +19,8 @@ public class ActionManager
     public void AddAction(ActionDef action)
     {
         _actions[action.ActionId] = action;
-        _actionsList.Add(action.ActionId);
-        _actionsSet.Add(action.ActionId);
+        if (_actionsSet.Add(action.ActionId))
+            _actionsList.Add(action.ActionId);
     }
 
     public void RemoveAction(int actionId)
