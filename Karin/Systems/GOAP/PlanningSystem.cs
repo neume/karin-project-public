@@ -37,11 +37,15 @@ public class PlanningSystem : AEntitySetSystem<GameTime>
                 planner.CurrentGoalId = chosenGoalId;
                 planner.Status = PlanStatus.Planned;
                 entity.Remove<NeedsReplanComponent>();
-
             }
             else
             {
                 planner.Status = PlanStatus.None;
+
+                if (entity.Has<CurrentActionComponent>())
+                    entity.Remove<CurrentActionComponent>();
+                if (entity.Has<PlanBufferComponent>())
+                    entity.Remove<PlanBufferComponent>();
             }
         }
     }
